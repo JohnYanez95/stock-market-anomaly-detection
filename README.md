@@ -52,34 +52,44 @@ This project implements a complete anomaly detection pipeline for stock market d
 
 ### Prerequisites
 
-- Python 3.9+
-- Polygon.io API key (free tier)
-- Redis server
-- Docker (optional)
+- **Python 3.10+** (tested with 3.10.12)
+- **Polygon.io API key** (free tier: 10,000 calls/month)
+- **Git** for version control
+- Redis server (for future caching implementation)
+- Docker (optional, for containerized deployment)
 
 ### Installation
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/YOUR_USERNAME/stock-market-anomaly-detection.git
+git clone https://github.com/JohnYanez95/stock-market-anomaly-detection.git
 cd stock-market-anomaly-detection
 ```
 
-2. Install dependencies:
+2. Create virtual environment and install dependencies:
 ```bash
+python3 -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
 pip install -r requirements.txt
+
+# Install MLOps packages separately (due to dependency conflicts)
+pip install mlflow feast
 ```
 
 3. Set up environment variables:
 ```bash
 cp .env.example .env
-# Edit .env with your API keys
+# Edit .env with your Polygon.io API key
 ```
 
 ### Quick Start
 
 1. **Data Collection**:
 ```bash
+# Activate virtual environment
+source venv/bin/activate
+
+# Collect sample data (AAPL, GOOGL, MSFT, TSLA, VOO)
 python src/data/collect_data.py
 ```
 
@@ -103,11 +113,37 @@ uvicorn src.api.main:app --reload
 streamlit run monitoring/dashboard.py
 ```
 
+## Current Status
+
+**✅ Completed (Week 1)**
+- Environment setup with Python 3.10 virtual environment
+- All dependencies installed (TensorFlow, scikit-learn, FastAPI, MLflow, Feast)
+- Polygon.io API integration working
+- Historical data collection implemented
+- Sample dataset collected: 5 symbols, ~19,000 total records
+- Data schema identified: OHLC prices, volume, VWAP, transaction counts
+
+**📊 Available Data**
+- **AAPL**: 3,762 minute-level records (Sep 11-17, 2025)
+- **GOOGL**: 3,522 records
+- **MSFT**: 3,120 records  
+- **TSLA**: 4,700 records (highest volume)
+- **VOO**: 2,574 records (ETF, lower frequency)
+
+**🚧 Next Steps**
+- Real-time WebSocket data streaming
+- Feature engineering pipeline
+- Anomaly detection model development
+
 ## Development Roadmap
 
 ### Week 1-2: Data Pipeline Foundation
 - [x] Project setup and structure
-- [ ] Polygon.io API integration
+- [x] Environment setup with virtual environment
+- [x] Dependencies installed (ML, MLOps, API frameworks)
+- [x] Polygon.io API integration
+- [x] Historical data collection for AAPL, GOOGL, MSFT, TSLA, VOO
+- [x] Data schema exploration (OHLC, volume, VWAP, transactions)
 - [ ] WebSocket real-time connection
 - [ ] Basic feature engineering
 
