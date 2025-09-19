@@ -46,7 +46,8 @@ This project implements a complete anomaly detection pipeline for stock market d
 │   └── kubernetes/
 ├── monitoring/      # Monitoring and alerting
 └── docs/           # Documentation
-    └── daily-reviews/  # Daily progress reviews
+    ├── daily-reviews/  # Daily progress reviews
+    └── time-invested/  # Time tracking and productivity metrics
 ```
 
 ## Getting Started
@@ -188,6 +189,10 @@ streamlit run monitoring/dashboard.py
 **Daily Reviews**: Detailed session summaries in `docs/daily-reviews/`
 - **[2025-09-18 Review](docs/daily-reviews/2025-09-18-review.md)**: Data schema exploration and analysis
 - Key insights: VWAP formula, volatility calculation, volume vs transactions, API limits
+
+**Time Investment**: Productivity tracking in `docs/time-invested/`
+- **[Time Tracking Overview](docs/time-invested/README.md)**: Project timeline and efficiency metrics
+- **[2025-09-18 Session](docs/time-invested/2025-09-18.md)**: 2.5 hours, data analysis focus
 
 **Analysis Scripts**: 
 - `notebooks/exploration/data_schema_analysis.py`: Comprehensive data analysis tool
