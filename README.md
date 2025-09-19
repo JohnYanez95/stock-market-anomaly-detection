@@ -161,7 +161,7 @@ The project supports real-time data streaming from multiple asset types with ind
 
 **Subscription Requirements**:
 - **Basic Tier** (Free): REST API only, no WebSocket access
-- **Starter Tier** ($29/month per asset): 15-minute delayed WebSocket streaming
+- **Starter Tier** (Stocks: $29/month, Currencies: $49/month): WebSocket streaming (stocks=15min delayed, currencies=real-time)
 - **Developer Tier** ($79/month per asset): Real-time WebSocket streaming
 - **Advanced Tier** ($199/month per asset): Real-time + additional features
 
@@ -175,9 +175,9 @@ POLYGON_TIER_CRYPTO=basic       # REST API only
 
 **Multi-Asset Setup**:
 ```bash
-POLYGON_TIER_STOCKS=starter     # 15-min delayed streaming
-POLYGON_TIER_CRYPTO=developer   # Real-time crypto streaming
-POLYGON_TIER_FOREX=starter      # 15-min delayed forex
+POLYGON_TIER_STOCKS=starter     # $29/month - 15-min delayed streaming
+POLYGON_TIER_CRYPTO=starter     # $49/month - real-time crypto streaming
+POLYGON_TIER_FOREX=starter      # $49/month - real-time forex (same as crypto)
 ```
 
 **Testing Your Configuration**:
