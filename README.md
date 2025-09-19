@@ -46,6 +46,7 @@ This project implements a complete anomaly detection pipeline for stock market d
 │   └── kubernetes/
 ├── monitoring/      # Monitoring and alerting
 └── docs/           # Documentation
+    └── daily-reviews/  # Daily progress reviews
 ```
 
 ## Getting Started
@@ -93,7 +94,13 @@ source venv/bin/activate
 python src/data/collect_data.py
 ```
 
-2. **Feature Engineering**:
+2. **Data Schema Analysis**:
+```bash
+# Comprehensive analysis of collected data
+python notebooks/exploration/data_schema_analysis.py
+```
+
+3. **Feature Engineering**:
 ```bash
 python src/features/build_features.py
 ```
@@ -120,15 +127,20 @@ streamlit run monitoring/dashboard.py
 - All dependencies installed (TensorFlow, scikit-learn, FastAPI, MLflow, Feast)
 - Polygon.io API integration working
 - Historical data collection implemented
-- Sample dataset collected: 5 symbols, ~19,000 total records
-- Data schema identified: OHLC prices, volume, VWAP, transaction counts
+- Sample dataset collected: 5 symbols, ~17,678 total records
+- **Data schema fully analyzed**: OHLC prices, volume, VWAP, transaction counts
+- **Volatility analysis**: TSLA (48.23%), GOOGL (19.69%), AAPL (15.95%), MSFT (17.89%), VOO (7.36%)
+- **Anomaly patterns identified**: Volume spikes, price movements, correlation analysis
+- **API limits understood**: 10K calls/month REST, unlimited WebSocket streaming
 
-**📊 Available Data**
-- **AAPL**: 3,762 minute-level records (Sep 11-17, 2025)
-- **GOOGL**: 3,522 records
-- **MSFT**: 3,120 records  
-- **TSLA**: 4,700 records (highest volume)
-- **VOO**: 2,574 records (ETF, lower frequency)
+**📊 Available Data & Analysis**
+- **AAPL**: 3,762 records, 15.95% volatility, 53 volume spikes detected
+- **GOOGL**: 3,522 records, 19.69% volatility, 59 volume spikes detected
+- **MSFT**: 3,120 records, 17.89% volatility, 33 volume spikes detected  
+- **TSLA**: 4,700 records, 48.23% volatility, 95 volume spikes, 2 large price moves (>5%)
+- **VOO**: 2,574 records, 7.36% volatility, 14 volume spikes (stable ETF behavior)
+- **Coverage**: Sep 11-17, 2025 (6.7 days), minute-level granularity
+- **Quality**: No missing values, all OHLC consistency checks passed
 
 **🚧 Next Steps**
 - Real-time WebSocket data streaming
@@ -143,7 +155,13 @@ streamlit run monitoring/dashboard.py
 - [x] Dependencies installed (ML, MLOps, API frameworks)
 - [x] Polygon.io API integration
 - [x] Historical data collection for AAPL, GOOGL, MSFT, TSLA, VOO
-- [x] Data schema exploration (OHLC, volume, VWAP, transactions)
+- [x] **Data schema comprehensive analysis**
+  - [x] Field definitions (OHLC, volume, VWAP, transactions)
+  - [x] Volatility analysis and calculation methodology
+  - [x] Volume spike detection and patterns
+  - [x] Cross-asset correlation analysis
+  - [x] Data quality validation
+  - [x] API limits and streaming capabilities assessment
 - [ ] WebSocket real-time connection
 - [ ] Basic feature engineering
 
@@ -164,6 +182,16 @@ streamlit run monitoring/dashboard.py
 - [ ] Historical validation
 - [ ] Performance optimization
 - [ ] Documentation and blog post
+
+## 📚 Documentation
+
+**Daily Reviews**: Detailed session summaries in `docs/daily-reviews/`
+- **[2025-09-18 Review](docs/daily-reviews/2025-09-18-review.md)**: Data schema exploration and analysis
+- Key insights: VWAP formula, volatility calculation, volume vs transactions, API limits
+
+**Analysis Scripts**: 
+- `notebooks/exploration/data_schema_analysis.py`: Comprehensive data analysis tool
+- `src/data/collect_data.py`: Historical data collection from Polygon.io
 
 ## Contributing
 
