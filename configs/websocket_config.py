@@ -132,8 +132,12 @@ class WebSocketConfig:
         if tier not in self.WEBSOCKET_ENABLED_TIERS:
             raise ValueError(f"WebSocket not available for {asset_type.value} on {tier.value} tier. Upgrade to Starter or higher.")
         
-        # Build URL from base + asset type
-        base_url = self.WEBSOCKET_BASE_URLS.get(tier)
+        # Special case: Crypto uses real-time endpoint even on Starter tier
+        if asset_type == AssetType.CRYPTO and tier == SubscriptionTier.STARTER:
+            base_url = self.WEBSOCKET_BASE_URLS.get(SubscriptionTier.DEVELOPER)
+        else:
+            base_url = self.WEBSOCKET_BASE_URLS.get(tier)
+            
         return f"{base_url}/{asset_type.value}"
     
     def get_available_data_types(self, asset_type: AssetType, include_restricted: bool = False) -> Dict[str, str]:
@@ -209,7 +213,11 @@ class WebSocketConfig:
         if tier == SubscriptionTier.BASIC:
             return None  # No streaming
         elif tier == SubscriptionTier.STARTER:
-            return 15    # 15-minute delay
+            # Crypto is real-time even on Starter tier
+            if asset_type == AssetType.CRYPTO:
+                return 0
+            else:
+                return 15    # 15-minute delay for stocks
         else:
             return 0     # Real-time
     

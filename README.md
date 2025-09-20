@@ -115,13 +115,19 @@ python src/data/collect_data.py
 python notebooks/exploration/data_schema_analysis.py
 ```
 
-3. **Real-Time Streaming** (requires Polygon.io Starter plan for stocks):
+3. **Real-Time Streaming** (requires Polygon.io Starter plans):
 ```bash
 # Test WebSocket configuration
 python configs/websocket_config.py
 
-# Start real-time streaming with anomaly detection
-python src/data/stream_data.py
+# Stream stocks (market hours, 15-min delayed)
+python src/data/stream_stocks.py
+
+# Stream crypto (24/7, real-time)
+python src/data/stream_crypto.py
+
+# Or run both simultaneously in separate terminals
+python src/data/stream_orchestrator.py
 ```
 
 4. **Real-Time Dashboard** (launch during market hours for live data):
@@ -167,17 +173,20 @@ The project supports real-time data streaming from multiple asset types with ind
 
 ### Configuration Examples
 
-**Stocks Only** (Current Setup):
-```bash
-POLYGON_TIER_STOCKS=starter     # WebSocket enabled
-POLYGON_TIER_CRYPTO=basic       # REST API only
-```
-
-**Multi-Asset Setup**:
+**Current Setup** (Stocks + Crypto):
 ```bash
 POLYGON_TIER_STOCKS=starter     # $29/month - 15-min delayed streaming
 POLYGON_TIER_CRYPTO=starter     # $49/month - real-time crypto streaming
-POLYGON_TIER_FOREX=starter      # $49/month - real-time forex (same as crypto)
+POLYGON_TIER_INDICES=basic      # REST API only
+POLYGON_TIER_FOREX=basic        # REST API only
+```
+
+**Future Multi-Asset Setup**:
+```bash
+POLYGON_TIER_STOCKS=starter     # $29/month - 15-min delayed streaming
+POLYGON_TIER_CRYPTO=starter     # $49/month - real-time crypto streaming
+POLYGON_TIER_FOREX=starter      # $49/month - real-time forex (included with crypto)
+POLYGON_TIER_OPTIONS=developer  # $79/month - real-time options
 ```
 
 **Testing Your Configuration**:
@@ -185,8 +194,12 @@ POLYGON_TIER_FOREX=starter      # $49/month - real-time forex (same as crypto)
 # Check what's available with your current subscriptions
 python configs/websocket_config.py
 
-# Test streaming (will show errors for unsupported assets)
-python src/data/stream_data.py
+# Test individual streams
+python src/data/stream_stocks.py  # Stocks only
+python src/data/stream_crypto.py  # Crypto only
+
+# Test multi-stream orchestration
+python src/data/stream_orchestrator.py --assets stocks crypto
 ```
 
 ### Live Anomaly Detection
@@ -204,9 +217,32 @@ Example output during market hours:
 🚨 ANOMALY: volume_spike in TSLA - 3.78x normal
 ```
 
+### Multi-Stream Architecture
+
+The system supports concurrent streaming from multiple asset classes using Polygon's cluster architecture:
+
+**Key Features**:
+- **One connection per asset type** - Stocks, crypto, forex, etc. on separate WebSocket connections
+- **Process isolation** - Each stream runs independently for maximum reliability
+- **Unified monitoring** - All streams can be viewed in a single dashboard
+- **24/7 crypto + Market hours stocks** - Different schedules handled automatically
+
+**Running Multiple Streams**:
+```bash
+# Option 1: Manual (separate terminals)
+Terminal 1: python src/data/stream_stocks.py
+Terminal 2: python src/data/stream_crypto.py
+
+# Option 2: Orchestrated (single command)
+python src/data/stream_orchestrator.py
+
+# Option 3: Future Docker approach (coming soon)
+docker run -p 8501:8501 stock-crypto-dashboard
+```
+
 ## Current Status
 
-**✅ Completed (Week 1)**
+**✅ Completed (Week 1-2)**
 - Environment setup with Python 3.10 virtual environment
 - All dependencies installed (TensorFlow, scikit-learn, FastAPI, MLflow, Feast)
 - Polygon.io API integration working
@@ -217,6 +253,8 @@ Example output during market hours:
 - **Anomaly patterns identified**: Volume spikes, price movements, correlation analysis
 - **Real-time WebSocket streaming implemented** with modular configuration
 - **Volume anomaly detection working in real-time**
+- **Multi-asset streaming support**: Separate scripts for stocks and crypto
+- **Crypto subscription added**: Real-time crypto data (BTC, ETH, ADA, SOL, DOT)
 
 **📊 Available Data & Analysis**
 - **AAPL**: 3,762 records, 15.95% volatility, 53 volume spikes detected
@@ -228,11 +266,13 @@ Example output during market hours:
 - **Quality**: No missing values, all OHLC consistency checks passed
 
 **🔄 Real-Time Streaming**
-- **WebSocket Integration**: Production-ready client with Polygon.io Starter plan
-- **Multi-Asset Support**: Stocks, crypto, forex, indices, options, futures
-- **Per-Asset Subscriptions**: Individual tier management via environment configuration
-- **Live Anomaly Detection**: Volume spikes detected in real-time (3x+ threshold)
-- **Data Quality**: 15-minute delayed data with consistent OHLC structure
+- **WebSocket Integration**: Production-ready clients for multiple asset types
+- **Active Subscriptions**: 
+  - Stocks: Starter plan ($29/month) - 15-minute delayed data
+  - Crypto: Starter plan ($49/month) - Real-time 24/7 data
+- **Multi-Asset Architecture**: Concurrent streaming from different clusters
+- **Live Anomaly Detection**: Volume spikes detected in real-time (3x+ stocks, 2x+ crypto)
+- **Data Quality**: Consistent OHLC structure across all assets
 
 **🚧 Next Steps**
 - Real-time monitoring dashboard (Streamlit) - immediate visual feedback
@@ -324,7 +364,7 @@ This mirrors how trading firms build robust systems - starting with anomaly dete
 
 ## Development Roadmap
 
-### Week 1-2: Data Pipeline Foundation + Real-Time Visualization
+### Phase 1: Foundation (Week 1-2) ✅
 - [x] Project setup and structure
 - [x] Environment setup with virtual environment
 - [x] Dependencies installed (ML, MLOps, API frameworks)
@@ -340,64 +380,110 @@ This mirrors how trading firms build robust systems - starting with anomaly dete
 - [x] **WebSocket real-time connection**
   - [x] Modular configuration system for per-asset subscriptions
   - [x] Multi-asset support (stocks, crypto, forex, indices, options, futures)
-  - [x] Real-time data streaming with 15-minute delay
+  - [x] Real-time data streaming with 15-minute delay (stocks)
   - [x] Live volume anomaly detection (3x threshold)
-- [ ] **Real-time monitoring dashboard (Streamlit)**
+- [x] **Multi-stream architecture**
+  - [x] Separate streaming scripts for stocks and crypto
+  - [x] Process-based orchestration for concurrent streams
+  - [x] Crypto subscription with real-time 24/7 data
+### Phase 2: Real-Time Dashboard (Week 2) 🚧 Current Focus
+- [ ] **Basic Streamlit dashboard**
   - [ ] Live price charts and volume visualization
-  - [ ] Anomaly detection alerts and flags
-  - [ ] Multi-symbol monitoring interface
-  - [ ] Performance metrics and statistics
-- [ ] Enhanced anomaly detection algorithms (price movements, volatility spikes)
+  - [ ] Anomaly detection alerts and flags  
+  - [ ] Multi-asset monitoring (stocks + crypto)
+  - [ ] Simple file/SQLite storage
+- [ ] **Enhanced anomaly detection**
+  - [ ] Price movement anomalies
+  - [ ] Volatility spike detection
+  - [ ] Cross-asset correlation breaks
 
-### Week 3-4: Advanced Analytics + ML Pipeline
-- [ ] **Advanced streaming analytics**
+### Phase 3: Containerization (Week 3)
+- [ ] **Docker containerization**
+  - [ ] Multi-process management with supervisor
+  - [ ] Unified container for stocks + crypto + dashboard
+  - [ ] Single command deployment: `docker run -p 8501:8501`
+  - [ ] Environment variable configuration
+- [ ] **Process orchestration**
+  - [ ] Health monitoring and auto-restart
+  - [ ] Shared volume for data persistence
+  - [ ] Logging aggregation
+
+### Phase 4: Enhanced Dashboard + Real-Time Labeling (Week 4-5)
+- [ ] **Migrate to TimescaleDB**
+  - [ ] Time-series optimized storage
+  - [ ] Fast aggregations for dashboard queries
+  - [ ] Historical data retention policies
+- [ ] **Real-time event labeling**
+  - [ ] Click-to-mark event boundaries on charts
+  - [ ] Dropdown menus for event classification
+  - [ ] Store labeled events for ML training
+  - [ ] Export training datasets
+- [ ] **Advanced analytics**
   - [ ] Rolling correlations and cross-asset analysis
-  - [ ] Dynamic volatility estimation
-  - [ ] Market regime detection (bull/bear/sideways)
   - [ ] Technical indicators (RSI, MACD, Bollinger Bands)
+  - [ ] Market regime detection
+
+### Phase 5: ML Pipeline + Production Systems (Week 6-7)
 - [ ] **ML model development**
   - [ ] Isolation Forest implementation
   - [ ] LSTM Autoencoder development
-  - [ ] Feature engineering pipeline for streaming data
-  - [ ] Backtesting framework with dashboard integration
-
-### Week 5-6: Decision Making + Production Systems
-- [ ] **Paper trading simulation**
-  - [ ] Strategy implementation based on anomaly detection
-  - [ ] Portfolio management and risk controls
-  - [ ] Performance tracking and visualization
-  - [ ] Strategy optimization through dashboard feedback
+  - [ ] Training on labeled anomaly data
+  - [ ] Backtesting framework
 - [ ] **Production infrastructure**
   - [ ] MLflow experiment tracking
-  - [ ] Model registry and promotion
-  - [ ] FastAPI endpoint development
-  - [ ] Feast feature store setup
+  - [ ] Model registry and versioning
+  - [ ] FastAPI serving endpoints
+  - [ ] Feast feature store
+- [ ] **Paper trading simulation**
+  - [ ] Strategy based on ML predictions
+  - [ ] Portfolio management and risk controls
+  - [ ] Performance tracking
 
-### Week 7-8: Refinement + Advanced Strategies
+### Phase 6: Advanced Strategies + Polish (Week 8)
 - [ ] **Strategy enhancement**
   - [ ] Multi-asset arbitrage detection
   - [ ] Cross-market correlation trading
   - [ ] Risk-adjusted position sizing
 - [ ] **Production polish**
-  - [ ] SHAP implementation for model interpretability
+  - [ ] SHAP implementation for interpretability
   - [ ] Performance optimization
-  - [ ] Comprehensive documentation and blog post
-  - [ ] Live dashboard demonstrations
+  - [ ] Comprehensive documentation
+  - [ ] Live demonstrations
+
+## 🏗️ Future Architecture
+
+### Containerized Multi-Stream Dashboard
+The project will evolve into a Docker-based system with:
+- **Single Container**: Runs stocks + crypto streams + dashboard
+- **Process Management**: Supervisor manages all processes
+- **One Command**: `docker run -p 8501:8501 stock-crypto-dashboard`
+- **Web Access**: Dashboard available at `http://localhost:8501`
+
+### TimescaleDB + Real-Time Labeling
+- **Time-Series Optimization**: Fast queries across millions of data points
+- **Event Labeling UI**: Click-to-mark anomalies for supervised learning
+- **Training Data Generation**: Human-in-the-loop ML pipeline
+- **PostgreSQL Compatible**: Full relational features for complex queries
 
 ## 📚 Documentation
 
 **Daily Reviews**: Detailed session summaries in `docs/daily-reviews/`
 - **[2025-09-18 Review](docs/daily-reviews/2025-09-18-review.md)**: Data schema exploration and analysis
-- Key insights: VWAP formula, volatility calculation, volume vs transactions, API limits
+- **[2025-09-19 Review](docs/daily-reviews/2025-09-19-review.md)**: WebSocket implementation and multi-stream architecture
+- Key insights: Real-time streaming, per-asset subscriptions, concurrent WebSocket connections
 
 **Time Investment**: Productivity tracking in `docs/time-invested/`
 - **[Time Tracking Overview](docs/time-invested/README.md)**: Project timeline and efficiency metrics
 - **[2025-09-18 Session](docs/time-invested/2025-09-18.md)**: 2.5 hours, data analysis focus
+- **[2025-09-19 Session](docs/time-invested/2025-09-19.md)**: 3.0 hours, WebSocket implementation
+- **Total Time**: 5.5+ hours (today's session ongoing)
 
 **Analysis Scripts**: 
 - `notebooks/exploration/data_schema_analysis.py`: Comprehensive data analysis tool
 - `src/data/collect_data.py`: Historical data collection from Polygon.io
-- `src/data/stream_data.py`: Real-time WebSocket streaming with anomaly detection
+- `src/data/stream_stocks.py`: Stock market WebSocket streaming (15-min delayed)
+- `src/data/stream_crypto.py`: Cryptocurrency WebSocket streaming (real-time 24/7)
+- `src/data/stream_orchestrator.py`: Multi-stream process orchestration
 - `configs/websocket_config.py`: Multi-asset subscription configuration system
 
 ## Contributing
