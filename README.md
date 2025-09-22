@@ -92,7 +92,7 @@ POLYGON_API_KEY=your_api_key_here
 # Per-asset subscription tiers (basic, starter, developer, advanced)
 # WebSocket requires at least 'starter' tier for each asset type
 POLYGON_TIER_STOCKS=starter     # Enable for WebSocket access
-POLYGON_TIER_CRYPTO=basic       # Basic = no WebSocket
+POLYGON_TIER_CRYPTO=starter     # Real-time WebSocket (24/7)
 POLYGON_TIER_INDICES=basic      # Basic = no WebSocket
 POLYGON_TIER_FOREX=basic        # Basic = no WebSocket
 POLYGON_TIER_OPTIONS=basic      # Basic = no WebSocket
@@ -254,7 +254,7 @@ docker run -p 8501:8501 stock-crypto-dashboard
 - **Real-time WebSocket streaming implemented** with modular configuration
 - **Volume anomaly detection working in real-time**
 - **Multi-asset streaming support**: Separate scripts for stocks and crypto
-- **Crypto subscription added**: Real-time crypto data (BTC, ETH, ADA, SOL, DOT)
+- **Crypto subscription added**: Real-time crypto data (BTC, ETH, ADA, SOL, DOT, DOGE)
 
 **📊 Available Data & Analysis**
 - **AAPL**: 3,762 records, 15.95% volatility, 53 volume spikes detected
@@ -273,6 +273,8 @@ docker run -p 8501:8501 stock-crypto-dashboard
 - **Multi-Asset Architecture**: Concurrent streaming from different clusters
 - **Live Anomaly Detection**: Volume spikes detected in real-time (3x+ stocks, 2x+ crypto)
 - **Data Quality**: Consistent OHLC structure across all assets
+- **Database Persistence**: SQLite database with time-series optimization
+- **Symbol Formats**: Stocks (`AAPL`, `GOOGL`) vs Crypto (`BTC-USD`, `ETH-USD`)
 
 **🚧 Next Steps**
 - Real-time monitoring dashboard (Streamlit) - immediate visual feedback
@@ -386,6 +388,10 @@ This mirrors how trading firms build robust systems - starting with anomaly dete
   - [x] Separate streaming scripts for stocks and crypto
   - [x] Process-based orchestration for concurrent streams
   - [x] Crypto subscription with real-time 24/7 data
+- [x] **Database integration (SQLite)**
+  - [x] Thread-safe operations for concurrent streams
+  - [x] Time-series optimized schema
+  - [x] Market data and anomaly persistence
 ### Phase 2: Real-Time Dashboard (Week 2) 🚧 Current Focus
 - [ ] **Basic Streamlit dashboard**
   - [ ] Live price charts and volume visualization
@@ -476,7 +482,7 @@ The project will evolve into a Docker-based system with:
 - **[Time Tracking Overview](docs/time-invested/README.md)**: Project timeline and efficiency metrics
 - **[2025-09-18 Session](docs/time-invested/2025-09-18.md)**: 2.5 hours, data analysis focus
 - **[2025-09-19 Session](docs/time-invested/2025-09-19.md)**: 3.0 hours, WebSocket implementation
-- **Total Time**: 5.5+ hours (today's session ongoing)
+- **Total Time**: 9.0+ hours across 4 sessions (September 21st session ongoing)
 
 **Analysis Scripts**: 
 - `notebooks/exploration/data_schema_analysis.py`: Comprehensive data analysis tool

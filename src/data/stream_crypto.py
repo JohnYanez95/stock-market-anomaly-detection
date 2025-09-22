@@ -64,8 +64,9 @@ class CryptoWebSocketClient:
         self.config = get_websocket_config()
         
         # Default to major cryptocurrency pairs (including DOGE!)
+        # Use the correct format that matches live data: hyphenated pairs
         if symbols is None:
-            symbols = ['X:BTCUSD', 'X:ETHUSD', 'X:ADAUSD', 'X:SOLUSD', 'X:DOTUSD', 'X:DOGEUSD']
+            symbols = ['BTC-USD', 'ETH-USD', 'ADA-USD', 'SOL-USD', 'DOT-USD', 'DOGE-USD']
         self.symbols = symbols
         
         # WebSocket configuration
@@ -332,7 +333,7 @@ def main():
     """Main function for cryptocurrency streaming"""
     
     # Initialize crypto client with default symbols (including DOGE!)
-    crypto_symbols = ['X:BTCUSD', 'X:ETHUSD', 'X:ADAUSD', 'X:SOLUSD', 'X:DOTUSD', 'X:DOGEUSD']
+    crypto_symbols = ['BTC-USD', 'ETH-USD', 'ADA-USD', 'SOL-USD', 'DOT-USD', 'DOGE-USD']
     client = CryptoWebSocketClient(symbols=crypto_symbols)
     processor = CryptoDataProcessor()
     
