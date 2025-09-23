@@ -146,7 +146,15 @@ def store_market_data(asset_type: str, symbol: str, data: Dict) -> bool:
     """
     try:
         # Extract fields from data (handles both stock and crypto formats)
-        timestamp = datetime.now()
+        # Use provided timestamp if available, otherwise use current time
+        if 'timestamp' in data:
+            if isinstance(data['timestamp'], str):
+                timestamp = datetime.fromisoformat(data['timestamp'])
+            else:
+                timestamp = data['timestamp']
+        else:
+            timestamp = datetime.now()
+        
         price = data.get('c', data.get('close', 0))  # Close price
         volume = data.get('v', data.get('volume', 0))
         high = data.get('h', data.get('high'))
@@ -155,13 +163,18 @@ def store_market_data(asset_type: str, symbol: str, data: Dict) -> bool:
         vwap = data.get('vw', data.get('vwap'))
         
         with get_db_cursor() as cursor:
+            # Prepare raw_data for JSON serialization (convert datetime objects to strings)
+            raw_data_copy = data.copy()
+            if 'timestamp' in raw_data_copy and hasattr(raw_data_copy['timestamp'], 'isoformat'):
+                raw_data_copy['timestamp'] = raw_data_copy['timestamp'].isoformat()
+            
             cursor.execute("""
                 INSERT INTO market_data 
                 (timestamp, symbol, asset_type, price, volume, high, low, open, vwap, raw_data)
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             """, (
                 timestamp, symbol, asset_type, price, volume, 
-                high, low, open_price, vwap, json.dumps(data)
+                high, low, open_price, vwap, json.dumps(raw_data_copy)
             ))
         
         logger.debug(f"Stored {asset_type} data for {symbol}: ${price:.4f}, Vol: {volume:,.0f}")
