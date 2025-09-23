@@ -6,6 +6,7 @@ Interactive Streamlit dashboard showing live cryptocurrency market data
 with anomaly detection visualization from SQLite database.
 
 Features:
+- 🔒 Secure authentication with session management
 - Real-time price charts for 6 crypto symbols
 - Auto-refresh every 60 seconds
 - Anomaly highlighting and alerts
@@ -15,6 +16,13 @@ Usage:
     streamlit run monitoring/dashboard.py
     
 Navigate to: http://localhost:8501
+Default credentials: admin / admin123
+
+Security Features:
+- PBKDF2 password hashing
+- Session timeout management
+- API key masking
+- Environment-based configuration
 """
 
 import streamlit as st
@@ -27,10 +35,14 @@ import time
 from pathlib import Path
 import sys
 import logging
+import os
 
 # Add src to Python path for imports
 sys.path.append('src')
 from data.database import get_db_connection
+
+# Import authentication module
+from monitoring.auth import require_authentication, get_current_user, mask_api_key, validate_environment
 
 # Configure page
 st.set_page_config(
@@ -179,14 +191,47 @@ def create_volume_chart(df, symbol):
 
 def main():
     """Main dashboard function"""
-    # Title and header
-    st.title("📊 Real-Time Crypto Market Dashboard")
+    # Authentication check
+    if not require_authentication():
+        st.stop()
+    
+    # Title and header with user info
+    col1, col2 = st.columns([3, 1])
+    with col1:
+        st.title("📊 Real-Time Crypto Market Dashboard")
+    with col2:
+        current_user = get_current_user()
+        if current_user:
+            st.markdown(f"**Welcome, {current_user}** 👤")
+    
     st.markdown("---")
     
     # Sidebar controls
     st.sidebar.header("Dashboard Controls")
     hours_back = st.sidebar.slider("Hours of Data", 1, 72, 48)
     auto_refresh = st.sidebar.checkbox("Auto Refresh (60s)", value=True)
+    
+    # Security information
+    st.sidebar.markdown("---")
+    st.sidebar.markdown("### 🔒 Security Status")
+    
+    # Validate environment and show warnings
+    warnings = validate_environment()
+    if warnings:
+        for warning in warnings:
+            st.sidebar.warning(warning)
+    else:
+        st.sidebar.success("✅ Security configuration OK")
+    
+    # Show masked API key
+    api_key = os.getenv('POLYGON_API_KEY', '')
+    if api_key:
+        masked_key = mask_api_key(api_key)
+        st.sidebar.markdown(f"**API Key:** `{masked_key}`")
+    else:
+        st.sidebar.error("⚠️ No API key configured")
+    
+    # Session info is already rendered by require_authentication()
     
     # Load data
     with st.spinner("Loading market data..."):
