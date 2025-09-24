@@ -30,6 +30,7 @@ import sqlite3
 import pandas as pd
 import plotly.graph_objects as go
 import plotly.express as px
+from plotly.subplots import make_subplots
 from datetime import datetime, timedelta
 import time
 from pathlib import Path
@@ -37,8 +38,11 @@ import sys
 import logging
 import os
 
-# Add src to Python path for imports
-sys.path.append('src')
+# Add paths for imports
+project_root = Path(__file__).parent.parent
+sys.path.append(str(project_root / 'src'))
+sys.path.append(str(project_root))
+
 from data.database import get_db_connection
 
 # Import authentication module
@@ -78,7 +82,8 @@ def load_market_data(hours_back=24):
         conn.close()
         
         if not df.empty:
-            df['timestamp'] = pd.to_datetime(df['timestamp'])
+            # Handle multiple datetime formats gracefully
+            df['timestamp'] = pd.to_datetime(df['timestamp'], format='mixed', errors='coerce')
             df = df.sort_values('timestamp')
         
         return df
@@ -104,15 +109,15 @@ def load_anomalies(hours_back=24):
         conn.close()
         
         if not df.empty:
-            df['start_time'] = pd.to_datetime(df['start_time'])
+            df['start_time'] = pd.to_datetime(df['start_time'], format='mixed', errors='coerce')
         
         return df
     except Exception as e:
         logger.error(f"Error loading anomaly data: {e}")
         return pd.DataFrame()
 
-def create_price_chart(df, symbol):
-    """Create price chart for a specific symbol"""
+def create_combined_chart(df, symbol, anomaly_df=None):
+    """Create combined price and volume chart with dual y-axes"""
     symbol_data = df[df['symbol'] == symbol].copy()
     
     if symbol_data.empty:
@@ -128,30 +133,70 @@ def create_price_chart(df, symbol):
         price_change = 0
         price_change_pct = 0
     
-    # Create the chart
-    fig = go.Figure()
+    # Check for volume anomalies
+    anomaly_times = set()
+    if anomaly_df is not None and not anomaly_df.empty:
+        symbol_anomalies = anomaly_df[anomaly_df['symbol'] == symbol]
+        # Convert anomaly timestamps to same format as market data
+        for _, anomaly in symbol_anomalies.iterrows():
+            anomaly_times.add(anomaly['start_time'])
     
-    # Add price line
-    fig.add_trace(go.Scatter(
-        x=symbol_data['timestamp'],
-        y=symbol_data['price'],
-        mode='lines+markers',
-        name=f'{symbol} Price',
-        line=dict(color='#00d4aa', width=2),
-        marker=dict(size=4)
-    ))
+    # Create figure with secondary y-axis
+    fig = make_subplots(specs=[[{"secondary_y": True}]])
+    
+    # Add price line (primary y-axis)
+    fig.add_trace(
+        go.Scatter(
+            x=symbol_data['timestamp'],
+            y=symbol_data['price'],
+            mode='lines+markers',
+            name='Price',
+            line=dict(color='#00d4aa', width=2),
+            marker=dict(size=4),
+            yaxis='y'
+        ),
+        secondary_y=False
+    )
+    
+    # Add volume bars (secondary y-axis) with anomaly highlighting
+    bar_colors = []
+    for ts in symbol_data['timestamp']:
+        # Check if this timestamp matches any stored anomaly (within 60 seconds)
+        is_anomaly = any(abs((ts - anomaly_ts).total_seconds()) < 60 
+                        for anomaly_ts in anomaly_times)
+        bar_colors.append('#ff4444' if is_anomaly else '#1f77b4')
+    
+    fig.add_trace(
+        go.Bar(
+            x=symbol_data['timestamp'],
+            y=symbol_data['volume'],
+            name='Volume',
+            marker_color=bar_colors,
+            opacity=0.6,
+            yaxis='y2'
+        ),
+        secondary_y=True
+    )
     
     # Update layout
     fig.update_layout(
         title=f"{symbol} - ${latest_price:.6f} ({price_change_pct:+.2f}%)",
         xaxis_title="Time",
-        yaxis_title="Price (USD)",
-        height=300,
-        showlegend=False,
+        height=400,  # Slightly taller for dual chart
+        showlegend=True,
+        legend=dict(x=0.01, y=0.99),
         template="plotly_dark"
     )
     
+    # Set y-axes titles
+    fig.update_yaxes(title_text="Price (USD)", secondary_y=False)
+    fig.update_yaxes(title_text="Volume", secondary_y=True)
+    
     return fig
+
+def create_price_chart(df, symbol):
+    """Create price chart for a specific symbol (legacy function)"""
+    return create_combined_chart(df, symbol)
 
 def create_volume_chart(df, symbol):
     """Create volume chart for a specific symbol"""
@@ -182,7 +227,7 @@ def create_volume_chart(df, symbol):
         title=f"{symbol} Volume",
         xaxis_title="Time",
         yaxis_title="Volume",
-        height=200,
+        height=300,
         showlegend=False,
         template="plotly_dark"
     )
@@ -269,8 +314,8 @@ def main():
     # Get unique symbols
     symbols = sorted(market_df['symbol'].unique())
     
-    # Create charts for each symbol
-    st.header("Live Price Charts")
+    # Create combined charts for each symbol
+    st.header("Live Price & Volume Charts")
     
     # Display in 2 columns
     for i in range(0, len(symbols), 2):
@@ -279,30 +324,16 @@ def main():
         with col1:
             if i < len(symbols):
                 symbol = symbols[i]
-                fig = create_price_chart(market_df, symbol)
+                fig = create_combined_chart(market_df, symbol, anomaly_df)
                 if fig:
-                    st.plotly_chart(fig, use_container_width=True)
+                    st.plotly_chart(fig, width='stretch')
         
         with col2:
             if i + 1 < len(symbols):
                 symbol = symbols[i + 1]
-                fig = create_price_chart(market_df, symbol)
+                fig = create_combined_chart(market_df, symbol, anomaly_df)
                 if fig:
-                    st.plotly_chart(fig, use_container_width=True)
-    
-    # Volume analysis section
-    st.header("Volume Analysis")
-    
-    for i in range(0, len(symbols), 3):
-        cols = st.columns(3)
-        
-        for j in range(3):
-            if i + j < len(symbols):
-                symbol = symbols[i + j]
-                with cols[j]:
-                    fig = create_volume_chart(market_df, symbol)
-                    if fig:
-                        st.plotly_chart(fig, use_container_width=True)
+                    st.plotly_chart(fig, width='stretch')
     
     # Anomaly alerts
     if not anomaly_df.empty:
@@ -335,7 +366,7 @@ def main():
     with st.expander("Raw Data (Latest 50 records)"):
         st.dataframe(
             market_df.head(50)[['timestamp', 'symbol', 'price', 'volume', 'vwap', 'high', 'low']],
-            use_container_width=True
+            width='stretch'
         )
     
     # Auto-refresh functionality

@@ -144,13 +144,23 @@ class DashboardAuth:
         if not self.is_session_valid():
             return {}
         
-        login_time = getattr(st.session_state, 'login_time', time.time())
+        current_time = time.time()
+        login_time = getattr(st.session_state, 'login_time', current_time)
+        last_activity = getattr(st.session_state, 'last_activity', current_time)
+        
+        # Update last activity to current time for display purposes
+        st.session_state.last_activity = current_time
+        
+        session_duration = int(current_time - login_time)
+        time_since_activity = int(current_time - last_activity)
+        timeout_remaining = max(0, int(self.session_timeout - time_since_activity))
+        
         return {
             'username': getattr(st.session_state, 'username', 'unknown'),
             'role': getattr(st.session_state, 'user_role', 'user'),
             'login_time': datetime.fromtimestamp(login_time).isoformat(),
-            'session_duration': int(time.time() - login_time),
-            'timeout_in': int(self.session_timeout - (time.time() - getattr(st.session_state, 'last_activity', time.time())))
+            'session_duration': session_duration,
+            'timeout_in': timeout_remaining
         }
 
 def render_login_form() -> bool:
@@ -232,8 +242,19 @@ def render_session_info():
         st.sidebar.markdown("### 👤 Session Info")
         st.sidebar.markdown(f"**User:** {session_info['username']}")
         st.sidebar.markdown(f"**Role:** {session_info['role']}")
-        st.sidebar.markdown(f"**Duration:** {session_info['session_duration']//60}m {session_info['session_duration']%60}s")
-        st.sidebar.markdown(f"**Timeout in:** {session_info['timeout_in']//60}m {session_info['timeout_in']%60}s")
+        
+        # Format duration nicely
+        duration = session_info['session_duration']
+        duration_str = f"{duration//3600}h {(duration%3600)//60}m {duration%60}s" if duration >= 3600 else f"{duration//60}m {duration%60}s"
+        st.sidebar.markdown(f"**Duration:** {duration_str}")
+        
+        # Format timeout remaining nicely  
+        timeout = session_info['timeout_in']
+        if timeout > 0:
+            timeout_str = f"{timeout//3600}h {(timeout%3600)//60}m {timeout%60}s" if timeout >= 3600 else f"{timeout//60}m {timeout%60}s"
+            st.sidebar.markdown(f"**Timeout in:** {timeout_str}")
+        else:
+            st.sidebar.markdown(f"**Timeout in:** ⚠️ Session expired")
         
         if st.sidebar.button("🚪 Logout"):
             auth.logout()
