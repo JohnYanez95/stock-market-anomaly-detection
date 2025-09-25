@@ -305,58 +305,52 @@ docker run -p 8501:8501 stock-crypto-dashboard
 - **Database Persistence**: All market data and anomalies stored in SQLite
 - **Multi-Stream Architecture**: Concurrent WebSocket connections with unified storage
 
-## 🚀 Next Session Planning (Phase 3 - Security ✅ COMPLETE)
+## 🔄 Pivotal Architecture Evolution
 
-### **Security Implementation Status** ✅
-**Completed**: September 23, 2025
-**Duration**: ~1 hour
-**Achievement**: Enterprise-grade security system fully implemented
+### From Local to Cloud (Phase 3+)
+The project is transitioning to **AWS cloud infrastructure** for 24/7 reliability:
+- **Remote streaming server**: Continuous data collection on AWS EC2
+- **TimescaleDB**: Professional time-series database
+- **Development machine**: Queries remote data for analysis
+- **Cost-effective**: $45-55/month for production deployment
 
-#### **Security Features Delivered**
-- ✅ **Authentication System**: PBKDF2 password hashing with salt
-- ✅ **Session Management**: Configurable timeout with activity tracking
-- ✅ **Access Controls**: Role-based permissions (admin/manager/user/viewer)
-- ✅ **HTTPS Documentation**: Complete SSL/TLS setup guide
-- ✅ **Security Scripts**: Automated setup and password management
-- ✅ **API Protection**: Automatic key masking in UI
-- ✅ **Comprehensive Testing**: 9/9 security tests passing
+### Docker's Role in the Architecture
+**Docker remains central to our deployment strategy**:
+- **On AWS EC2**: Docker containers for streaming services
+- **Local testing**: Docker Compose for development
+- **Clean deployment**: Same containers work locally and on AWS
+- **Process isolation**: Each service in its own container
 
-### **Next: Docker Containerization**
-**Estimated Duration**: 2-3 hours  
-**Primary Focus**: Production deployment
+### From Anomalies to Microstructure (Phase 4+)
+Discovery of institutional-quality market data enables:
+- **Order flow analysis**: Buy/sell pressure indicators using condition codes [1]/[2]
+- **Liquidity metrics**: Bid-ask spreads and market depth
+- **Professional features**: Same data hedge funds analyze
+- **Enhanced anomaly detection**: Beyond volume spikes to market microstructure
 
-#### **2. Docker Containerization (120-150 minutes)**
-- **Multi-process container**: Supervisor management for dashboard + streaming processes
-- **Dockerfile creation**: Optimized container with all dependencies
-- **Single-command deployment**: `docker run -p 8501:8501 stock-crypto-dashboard`
-- **Environment variables**: Clean configuration management
-- **Data persistence**: Shared volumes for SQLite database
-- **Health monitoring**: Process restart capabilities and logging
+### Reading Companion
+Following **"Advances in Financial Machine Learning"** by Marcos López de Prado to ensure academic rigor meets production reality:
+- **Market microstructure** understanding for feature engineering
+- **Financial labeling** techniques for anomaly detection
+- **Production deployment** best practices for ML systems
 
-#### **3. Dashboard Refinement (60-90 minutes)**
-- **Enhanced UI/UX**: Professional styling and layout improvements
-- **Additional charts**: Technical indicators, correlation analysis
-- **Performance optimization**: Faster load times and smoother updates
-- **Error handling**: Robust connection management and fallback states
-- **Configuration options**: User-configurable refresh rates and data windows
+## 🚀 Current Status & Next Steps
 
-### **Success Criteria**
-- ✅ **Security**: Dashboard protected with authentication (COMPLETE)
-- ⏳ **Docker**: Complete container running all processes in single command
-- ⏳ **Production**: Enhanced dashboard with professional deployment
-- ⏳ **Scalability**: Ready for Phase 4 advanced analytics
+### Phase 3 Security ✅ COMPLETE
+**Completed**: September 23, 2025  
+**Achievement**: Enterprise-grade authentication system with PBKDF2 hashing, session management, and role-based access control
 
-### **Technical Prerequisites**
-- Current Phase 2 foundation: ✅ Complete (dashboard + 64,900 records + verified streaming)
-- Database: ✅ Operational SQLite with live data integration
-- Streaming: ✅ Verified working for all 6 crypto symbols
-- Documentation: ✅ Comprehensive tracking and architecture documentation
+### Next Focus: AWS Cloud Infrastructure
+**Starting**: Week of September 25, 2025  
+**Objective**: Deploy 24/7 streaming infrastructure on AWS for reliable data collection
 
-**🚧 Upcoming Phase 3 Goals**
-- Enhanced anomaly detection algorithms (price movements, correlation breaks)
-- Docker containerization for single-command deployment
-- TimescaleDB migration for production-scale time-series operations
-- Feature engineering pipeline for ML model development
+**Key Deliverables**:
+- AWS EC2 instance with TimescaleDB for remote data storage
+- Continuous streaming that development machine queries
+- Professional monitoring with CloudWatch
+- Cost-optimized setup (~$50/month)
+
+See [AWS Streaming Architecture Guide](docs/research/aws-streaming-architecture.md) for detailed implementation plan.
 
 ## Development Philosophy
 
@@ -483,69 +477,118 @@ This mirrors how trading firms build robust systems - starting with anomaly dete
   - [x] Interactive Plotly charts
   - [x] Real-time database integration
 
-### Phase 3: Containerization (Week 3)
-- [ ] **Docker containerization**
-  - [ ] Multi-process management with supervisor
-  - [ ] Unified container for stocks + crypto + dashboard
-  - [ ] Single command deployment: `docker run -p 8501:8501`
-  - [ ] Environment variable configuration
-- [ ] **Process orchestration**
-  - [ ] Health monitoring and auto-restart
-  - [ ] Shared volume for data persistence
-  - [ ] Logging aggregation
+### Phase 3: Cloud Infrastructure + Market Fundamentals (Week 3) 🚧 IN PROGRESS
+- [x] **Security implementation** ✅ COMPLETE
+  - [x] PBKDF2 authentication system
+  - [x] Session management with role-based access
+  - [x] HTTPS documentation and setup scripts
+- [ ] **AWS Infrastructure Setup**
+  - [ ] Free tier testing with t2.micro
+  - [ ] Production deployment on t3.medium
+  - [ ] ML-optimized TimescaleDB schema
+  - [ ] Remote database connectivity
+- [ ] **Docker Deployment on AWS**
+  - [ ] Containerize streaming services
+  - [ ] Docker Compose for multi-service orchestration
+  - [ ] Test locally with Docker before AWS deployment
+  - [ ] Implement health checks and auto-restart
+  
+**Reading**: López de Prado Ch 1-3
+- Ch 1: Financial ML motivation → Understanding anomaly detection value
+- Ch 2: Data structures → Design `market_microstructure` table
+- Ch 3: Labeling → Marking anomalies for supervised learning
 
-### Phase 4: Enhanced Dashboard + Real-Time Labeling (Week 4-5)
-- [ ] **Migrate to TimescaleDB**
-  - [ ] Time-series optimized storage
-  - [ ] Fast aggregations for dashboard queries
-  - [ ] Historical data retention policies
-- [ ] **Real-time event labeling**
-  - [ ] Click-to-mark event boundaries on charts
-  - [ ] Dropdown menus for event classification
-  - [ ] Store labeled events for ML training
-  - [ ] Export training datasets
-  - [ ] **Edge detection auto-refinement**: Auto-refine user-selected boundaries using volume/price edge detection
-  - [ ] **Enterprise batch workflow**: Local Docker labeling → cloud storage sync for team collaboration
-- [ ] **Advanced analytics**
-  - [ ] Rolling correlations and cross-asset analysis
+### Phase 4: Enhanced Analytics + Microstructure (Week 4-5)
+- [ ] **Market Microstructure Implementation**
+  - [ ] Validate condition codes [1]/[2] for buy/sell identification
+  - [ ] Order flow imbalance calculation
+  - [ ] Bid-ask spread analysis from XQ (quotes) data
+  - [ ] Buy/sell pressure indicators
+- [ ] **Enhanced Database Schema**
+  - [ ] Add buy_volume, sell_volume fields
+  - [ ] Calculate order_imbalance metric
+  - [ ] Store volatility and technical indicators
+  - [ ] Pre-compute anomaly scores
+- [ ] **Advanced Analytics**
   - [ ] Technical indicators (RSI, MACD, Bollinger Bands)
+  - [ ] Cross-asset correlation analysis
   - [ ] Market regime detection
+  
+**Reading**: López de Prado Ch 19 + Harris "Trading and Exchanges" Ch 3-5
+- Microstructural features for anomaly detection
+- Understanding order flow and market mechanics
 
 ### Phase 5: ML Pipeline + Production Systems (Week 6-7)
-- [ ] **ML model development**
-  - [ ] Isolation Forest implementation
-  - [ ] LSTM Autoencoder development
-  - [ ] Training on labeled anomaly data
-  - [ ] Backtesting framework
-- [ ] **Production infrastructure**
-  - [ ] MLflow experiment tracking
-  - [ ] Model registry and versioning
-  - [ ] FastAPI serving endpoints
-  - [ ] Feast feature store
-- [ ] **Paper trading simulation**
-  - [ ] Strategy based on ML predictions
-  - [ ] Portfolio management and risk controls
-  - [ ] Performance tracking
+- [ ] **ML Model Development**
+  - [ ] Feature engineering from microstructure data
+  - [ ] Isolation Forest with order flow features
+  - [ ] LSTM Autoencoder with bid-ask inputs
+  - [ ] Training on labeled market anomalies
+- [ ] **Production Infrastructure on AWS**
+  - [ ] MLflow deployment on EC2
+  - [ ] Model serving with FastAPI
+  - [ ] S3 model artifact storage
+  - [ ] CloudWatch monitoring
+- [ ] **Backtesting Framework**
+  - [ ] Historical performance validation
+  - [ ] Walk-forward analysis
+  - [ ] Transaction cost modeling
+  
+**Reading**: López de Prado Ch 7-8 (Cross-validation) + Ch 16 (ML interpretation)
+- Financial cross-validation without data leakage
+- Feature importance for market anomalies
 
-### Phase 6: Advanced Strategies + Polish (Week 8)
-- [ ] **Strategy enhancement**
+### Phase 6: Trading Strategies + Production Polish (Week 8)
+- [ ] **From Anomalies to Trading Signals**
+  - [ ] Anomaly → signal conversion logic
+  - [ ] Position sizing from order flow
+  - [ ] Risk management using bid-ask spreads
+  - [ ] Paper trading implementation
+- [ ] **Strategy Enhancement**
   - [ ] Multi-asset arbitrage detection
-  - [ ] Cross-market correlation trading
-  - [ ] Risk-adjusted position sizing
-- [ ] **Production polish**
-  - [ ] SHAP implementation for interpretability
+  - [ ] Order flow momentum strategies
+  - [ ] Liquidity-aware execution
+- [ ] **Production Polish**
+  - [ ] SHAP for anomaly interpretation
   - [ ] Performance optimization
-  - [ ] Comprehensive documentation
-  - [ ] Live demonstrations
+  - [ ] AWS cost optimization (Reserved Instances)
+  
+**Reading**: López de Prado Ch 9-10 (Bet sizing, risk management)
+- Position sizing based on anomaly confidence
+- Risk management from microstructure
 
-## 🏗️ Future Architecture
+## 🏗️ Architecture Overview
 
-### Containerized Multi-Stream Dashboard
-The project will evolve into a Docker-based system with:
-- **Single Container**: Runs stocks + crypto streams + dashboard
-- **Process Management**: Supervisor manages all processes
-- **One Command**: `docker run -p 8501:8501 stock-crypto-dashboard`
-- **Web Access**: Dashboard available at `http://localhost:8501`
+### Current Architecture: Docker on AWS
+**Phase 3-4 Implementation**:
+```
+AWS EC2 Instance (Remote)
+├── Docker Container: Crypto Streaming
+├── Docker Container: Stock Streaming
+├── Docker Container: TimescaleDB
+└── Docker Container: Data Processing
+
+Development Machine (Local)
+└── Queries remote TimescaleDB for analysis
+```
+
+**Deployment Commands**:
+```bash
+# On AWS EC2
+docker-compose up -d  # Start all services
+docker-compose ps     # Check status
+docker-compose logs   # View logs
+
+# Local development
+docker-compose -f docker-compose.dev.yml up  # Test before deploying
+```
+
+### Why Docker + AWS?
+- **Environment consistency**: Same containers locally and in production
+- **Easy updates**: `docker-compose pull && docker-compose up -d`
+- **Service isolation**: Streaming crash doesn't affect database
+- **Resource control**: CPU/memory limits per container
+- **Simple scaling**: Add more containers as needed
 
 ### TimescaleDB + Real-Time Labeling
 - **Time-Series Optimization**: Fast queries across millions of data points
@@ -553,22 +596,48 @@ The project will evolve into a Docker-based system with:
 - **Training Data Generation**: Human-in-the-loop ML pipeline
 - **PostgreSQL Compatible**: Full relational features for complex queries
 
-### Enterprise Anomaly Labeling System
-**Concept**: Hybrid local/cloud architecture for team-based anomaly labeling
-- **Local Docker Processing**: Interactive labeling on powerful workstations
-- **Edge Detection Auto-Refinement**: Algorithm tightens user-selected time boundaries
-- **Batch Cloud Sync**: `docker run` → label locally → batch upsert to cloud storage
-- **Cost Optimization**: No cloud compute costs during labeling sessions
-- **Security**: Sensitive data stays local during human review process
-- **Team Workflow**: SMEs label locally, results sync to shared cloud datasets
+### Docker Deployment Examples
 
-**Use Cases**: Financial anomaly detection, IoT sensor analysis, manufacturing quality control
-
+**Local Development Testing**:
 ```bash
-# Enterprise workflow example
-docker run your-labeler:latest --pull-from-cloud s3://data-bucket
-docker run -p 8501:8501 your-labeler:latest --mode interactive  
-docker run your-labeler:latest --push-to-cloud s3://labeled-data --upsert
+# Test full stack locally before AWS deployment
+git clone https://github.com/yourusername/stock-market-anomaly-detection
+cd stock-market-anomaly-detection
+docker-compose -f docker-compose.dev.yml up
+# Access dashboard at http://localhost:8501
+```
+
+**AWS Production Deployment**:
+```bash
+# On EC2 instance
+ssh -i your-key.pem ubuntu@your-ec2-ip
+git clone https://github.com/yourusername/stock-market-anomaly-detection
+cd stock-market-anomaly-detection
+
+# Configure environment
+cp .env.example .env
+nano .env  # Add your API keys
+
+# Deploy with Docker Compose
+docker-compose -f docker-compose.prod.yml up -d
+```
+
+**Service Architecture**:
+```yaml
+# docker-compose.prod.yml
+version: '3.8'
+services:
+  crypto-stream:
+    build: ./streaming
+    restart: always
+    env_file: .env
+    
+  timescaledb:
+    image: timescale/timescaledb:latest
+    volumes:
+      - ./data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
 ```
 
 ## 📚 Documentation

@@ -187,4 +187,4 @@ dump.rdb
 # Feast
 feast_repo/
 feature_repo/
-.feast/
+.feast/ssl/
