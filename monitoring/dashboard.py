@@ -16,7 +16,7 @@ Usage:
     streamlit run monitoring/dashboard.py
     
 Navigate to: http://localhost:8501
-Default credentials: admin / ***REDACTED***
+Credentials: Set via environment variables (see .env.example)
 
 Security Features:
 - PBKDF2 password hashing

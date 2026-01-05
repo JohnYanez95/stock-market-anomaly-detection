@@ -63,7 +63,7 @@ def setup_https_environment():
 def get_credentials():
     """Get login credentials from environment"""
     username = os.getenv('DASHBOARD_USERNAME', 'admin')
-    password = os.getenv('DASHBOARD_PASSWORD', '***REDACTED***')
+    password = os.getenv('DASHBOARD_PASSWORD', '[SET IN .env]')
     
     print(f"\n🔑 Login Credentials:")
     print(f"   Username: {username}")

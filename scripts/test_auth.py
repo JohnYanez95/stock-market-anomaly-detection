@@ -116,7 +116,7 @@ def test_user_authentication():
         admin_password = os.getenv('DASHBOARD_PASSWORD')
         if not admin_password:
             print("⚠️ No DASHBOARD_PASSWORD set, using default")
-            admin_password = "***REDACTED***"
+            admin_password = os.getenv('DASHBOARD_PASSWORD', 'test_password')
         
         # Test admin authentication
         result = auth.authenticate_user('admin', admin_password)

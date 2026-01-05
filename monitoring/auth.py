@@ -52,7 +52,9 @@ class DashboardAuth:
         """Get authentication credentials from environment"""
         # Default admin user
         admin_user = os.getenv('DASHBOARD_USERNAME', 'admin')
-        admin_pass = os.getenv('DASHBOARD_PASSWORD', '***REDACTED***')
+        admin_pass = os.getenv('DASHBOARD_PASSWORD')
+        if not admin_pass:
+            raise ValueError("DASHBOARD_PASSWORD environment variable must be set")
         
         # Hash the default password if not already hashed
         if not os.getenv('DASHBOARD_PASSWORD_HASHED'):
@@ -211,7 +213,6 @@ def render_login_form() -> bool:
             st.rerun()
         else:
             st.error("❌ Invalid username or password")
-            st.info("💡 Default credentials: admin / ***REDACTED***")
     
     st.markdown("</div>", unsafe_allow_html=True)
     
@@ -312,7 +313,7 @@ def validate_environment():
     warnings = []
     
     # Check if using default credentials
-    if os.getenv('DASHBOARD_PASSWORD', '***REDACTED***') == '***REDACTED***':
+    if not os.getenv('DASHBOARD_PASSWORD'):
         warnings.append("⚠️ Using default password - change DASHBOARD_PASSWORD environment variable")
     
     # Check session timeout

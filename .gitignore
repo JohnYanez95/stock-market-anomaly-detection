@@ -173,6 +173,9 @@ config/secrets.yaml
 config/api_keys.yaml
 .secrets/
 
+# SSL certificates (never commit private keys!)
+ssl/
+
 # Temporary files
 temp/
 tmp/

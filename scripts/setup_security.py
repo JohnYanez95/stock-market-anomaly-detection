@@ -189,7 +189,7 @@ def validate_security():
             env_content = f.read()
         
         # Check for default password
-        if 'DASHBOARD_PASSWORD=***REDACTED***' in env_content:
+        if 'DASHBOARD_PASSWORD=CHANGE_THIS' in env_content or 'DASHBOARD_PASSWORD=' not in env_content:
             issues.append("⚠️ Using default password - change it!")
         
         # Check for SSL configuration
